@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -16,14 +16,24 @@ import product4 from "@/assets/product-4.jpg";
 import product5 from "@/assets/product-5.jpg";
 import product6 from "@/assets/product-6.jpg";
 
-const products = [
-  { id: 1, name: "Embroidered Lawn Suit", price: 4500, category: "dress", image: product1 },
-  { id: 2, name: "Kundan Jewelry Set", price: 8500, category: "jewelry", image: product2 },
-  { id: 3, name: "Silk Saree", price: 6500, category: "dress", image: product3 },
-  { id: 4, name: "Traditional Earrings", price: 2500, category: "jewelry", image: product4 },
-  { id: 5, name: "Designer Kurta", price: 3500, category: "dress", image: product5 },
-  { id: 6, name: "Bridal Necklace", price: 12000, category: "jewelry", image: product6 },
-];
+const productImages: Record<string, string> = {
+  "product-1.jpg": product1,
+  "product-2.jpg": product2,
+  "product-3.jpg": product3,
+  "product-4.jpg": product4,
+  "product-5.jpg": product5,
+  "product-6.jpg": product6,
+};
+
+interface Product {
+  id: string;
+  name: string;
+  description: string | null;
+  price: number;
+  category: string;
+  image_url: string | null;
+  occasion: string | null;
+}
 
 interface Message {
   role: "user" | "assistant";
@@ -43,6 +53,7 @@ const Index = () => {
   const [userInput, setUserInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [recommendation, setRecommendation] = useState<Recommendation | null>(null);
+  const [products, setProducts] = useState<Product[]>([]);
   const { toast } = useToast();
 
   const [stylistForm, setStylistForm] = useState({
@@ -50,6 +61,32 @@ const Index = () => {
     preferences: "",
     budget: 5000,
   });
+
+  // Fetch products from database
+  const fetchProducts = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("products")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+
+      setProducts(data || []);
+    } catch (error: any) {
+      console.error("Error fetching products:", error);
+      toast({
+        title: "Error",
+        description: "Failed to load products",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Load products on mount
+  useEffect(() => {
+    fetchProducts();
+  }, []);
 
   const handleSendMessage = async () => {
     if (!userInput.trim() || isLoading) return;
@@ -337,28 +374,37 @@ const Index = () => {
               <p className="text-muted-foreground">Exquisite eastern wear & jewelry</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {products.map((product) => (
-                <Card key={product.id} className="overflow-hidden hover:shadow-xl transition-shadow">
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="w-full h-64 object-cover"
-                  />
-                  <CardContent className="p-4">
-                    <h3 className="font-semibold text-lg mb-1">{product.name}</h3>
-                    <p className="text-2xl font-bold text-primary mb-2">
-                      Rs. {product.price.toLocaleString()}
-                    </p>
-                    <Badge variant="secondary" className="mb-3">
-                      {product.category}
-                    </Badge>
-                    <Button className="w-full">
-                      <ShoppingBag className="mr-2 h-4 w-4" />
-                      View Details
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
+              {products.map((product) => {
+                const imageName = product.image_url?.split('/').pop() || '';
+                const productImage = productImages[imageName] || product1;
+                
+                return (
+                  <Card key={product.id} className="overflow-hidden hover:shadow-xl transition-shadow">
+                    <img
+                      src={productImage}
+                      alt={product.name}
+                      className="w-full h-64 object-cover"
+                    />
+                    <CardContent className="p-4">
+                      <h3 className="font-semibold text-lg mb-1">{product.name}</h3>
+                      {product.description && (
+                        <p className="text-sm text-muted-foreground mb-2">{product.description}</p>
+                      )}
+                      <p className="text-2xl font-bold text-primary mb-2">
+                        Rs. {product.price.toLocaleString()}
+                      </p>
+                      <div className="flex gap-2 mb-3">
+                        <Badge variant="secondary">{product.category}</Badge>
+                        {product.occasion && <Badge variant="outline">{product.occasion}</Badge>}
+                      </div>
+                      <Button className="w-full">
+                        <ShoppingBag className="mr-2 h-4 w-4" />
+                        View Details
+                      </Button>
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </div>
           </section>
         )}

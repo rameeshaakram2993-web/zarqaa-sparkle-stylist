@@ -78,7 +78,10 @@ Suggest a main outfit and complementary jewelry that work together beautifully.`
     }
 
     const data = await response.json();
-    const aiResponse = data.choices[0].message.content;
+    let aiResponse = data.choices[0].message.content;
+    
+    // Remove markdown code blocks if present
+    aiResponse = aiResponse.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
     
     // Parse the JSON response
     const recommendations = JSON.parse(aiResponse);
