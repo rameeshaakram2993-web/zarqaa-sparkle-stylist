@@ -8,6 +8,9 @@ This is a **reference implementation** of the ZarqaaCloset AI Fashion Assistant 
 
 - ✅ AI Fashion Chat using Lovable AI Gateway
 - ✅ Style Recommendations (occasion-based)
+- ✅ **Advanced A* Search Algorithm** for optimal outfit combinations
+- ✅ **Genetic Algorithm** for diverse outfit generation
+- ✅ **Expert System** for outfit compatibility analysis
 - ✅ FAQ Knowledge from your uploaded PDF
 - ✅ Products API endpoint
 
@@ -61,23 +64,69 @@ Content-Type: application/json
 }
 ```
 
-### 3. Get Products
+### 3. Advanced Recommendations (A* + Genetic Algorithm)
+```bash
+POST /api/advanced-recommendations
+Content-Type: application/json
+
+{
+  "occasion": "wedding",
+  "style": "traditional elegant",
+  "budget": 15000
+}
+```
+
+### 4. Outfit Analyzer (Expert System)
+```bash
+POST /api/outfit-analyzer
+Content-Type: application/json
+
+{
+  "products": [
+    {"id": "1", "name": "Embroidered Suit", "price": 4500, "category": "dress"},
+    {"id": "2", "name": "Kundan Set", "price": 8500, "category": "jewelry"}
+  ]
+}
+```
+
+### 5. Get Products
 ```bash
 GET /api/products
 ```
 
-### 4. Health Check
+### 6. Health Check
 ```bash
 GET /health
 ```
+
+## Advanced Algorithms
+
+### A* Search Algorithm
+- Builds a product compatibility graph
+- Uses A* pathfinding to find optimal outfit combinations
+- Considers budget constraints and product compatibility
+- Returns top 5 best combinations
+
+### Genetic Algorithm
+- Creates diverse outfit combinations through evolution
+- Uses fitness function to evaluate outfit quality
+- Implements crossover and mutation for variety
+- Population-based approach for multiple solutions
+
+### Expert System
+- Rule-based outfit compatibility analysis
+- Evaluates style coherence and price balance
+- Provides actionable improvement tips
+- Calculates compatibility scores
 
 ## Integration with Lovable Project
 
 Your Lovable project is already using the TypeScript edge functions which work the same way. This Python implementation is just for reference or if you want to:
 
-1. Run a separate Python backend
+1. Run a separate Python backend with advanced AI algorithms
 2. Customize the backend logic
 3. Add additional Python-specific features
+4. Experiment with A* search and genetic algorithms
 
 ## FAQ Knowledge
 
