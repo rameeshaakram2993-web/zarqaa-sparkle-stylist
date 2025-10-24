@@ -5,9 +5,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Slider } from "@/components/ui/slider";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Sparkles, MessageSquare, ShoppingBag, Send, Loader2 } from "lucide-react";
+import { Sparkles, MessageSquare, ShoppingBag, Send, Brain, Zap } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { AIThinkingAnimation } from "@/components/AIThinkingAnimation";
+import { AIRecommendationCard } from "@/components/AIRecommendationCard";
+import { AIFeatureShowcase } from "@/components/AIFeatureShowcase";
 import heroBg from "@/assets/hero-bg.jpg";
 import product1 from "@/assets/product-1.jpg";
 import product2 from "@/assets/product-2.jpg";
@@ -173,36 +176,81 @@ const Index = () => {
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         {activeTab === "home" && (
-          <section className="relative py-20 rounded-2xl overflow-hidden mb-12">
-            <div
-              className="absolute inset-0 bg-cover bg-center"
-              style={{ backgroundImage: `url(${heroBg})` }}
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-primary/90 to-primary/70" />
-            </div>
-            <div className="relative z-10 text-center text-primary-foreground">
-              <h2 className="text-5xl font-bold mb-4">AI-Powered Fashion Assistant</h2>
-              <p className="text-xl mb-8 opacity-90">
-                Smart recommendations for eastern wear & jewelry
-              </p>
-              <Button
-                size="lg"
-                variant="secondary"
-                onClick={() => setActiveTab("ai stylist")}
-                className="shadow-lg hover:scale-105 transition-transform"
+          <>
+            <section className="relative py-24 rounded-3xl overflow-hidden mb-8">
+              <div
+                className="absolute inset-0 bg-cover bg-center"
+                style={{ backgroundImage: `url(${heroBg})` }}
               >
-                <Sparkles className="mr-2 h-5 w-5" />
-                Start AI Stylist
-              </Button>
-            </div>
-          </section>
+                <div className="absolute inset-0 bg-gradient-to-r from-primary via-primary-hover to-secondary/80" />
+              </div>
+              <div className="relative z-10 text-center text-primary-foreground px-4">
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full mb-6 animate-in fade-in-50 slide-in-from-top duration-700">
+                  <Brain className="h-5 w-5 animate-pulse" />
+                  <span className="font-semibold">Advanced AI Technology</span>
+                  <Sparkles className="h-5 w-5 animate-spin" style={{ animationDuration: '3s' }} />
+                </div>
+                <h2 className="text-6xl font-bold mb-6 animate-in fade-in-50 slide-in-from-bottom duration-700 delay-100">
+                  AI-Powered Fashion Assistant
+                </h2>
+                <p className="text-2xl mb-4 opacity-90 animate-in fade-in-50 slide-in-from-bottom duration-700 delay-200">
+                  Neural networks meet eastern elegance
+                </p>
+                <p className="text-lg mb-10 opacity-80 max-w-2xl mx-auto animate-in fade-in-50 slide-in-from-bottom duration-700 delay-300">
+                  Experience intelligent style recommendations powered by A* search algorithms, genetic optimization, and expert fashion AI
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-in fade-in-50 slide-in-from-bottom duration-700 delay-500">
+                  <Button
+                    size="lg"
+                    variant="secondary"
+                    onClick={() => setActiveTab("ai stylist")}
+                    className="shadow-2xl hover:scale-110 transition-transform text-lg px-8 py-6 bg-white hover:bg-white/90"
+                  >
+                    <Brain className="mr-2 h-6 w-6" />
+                    Launch AI Stylist
+                  </Button>
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    onClick={() => setActiveTab("faq chat")}
+                    className="shadow-xl hover:scale-105 transition-transform text-lg px-8 py-6 border-2 border-white/30 text-white hover:bg-white/10"
+                  >
+                    <MessageSquare className="mr-2 h-6 w-6" />
+                    Chat with AI
+                  </Button>
+                </div>
+                <div className="mt-12 flex items-center justify-center gap-8 text-sm opacity-90 animate-in fade-in-50 slide-in-from-bottom duration-700 delay-700">
+                  <div className="flex items-center gap-2">
+                    <Zap className="h-4 w-4" />
+                    <span>Instant Results</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Brain className="h-4 w-4" />
+                    <span>AI-Optimized</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="h-4 w-4" />
+                    <span>Personalized</span>
+                  </div>
+                </div>
+              </div>
+            </section>
+            
+            <AIFeatureShowcase />
+          </>
         )}
 
         {activeTab === "ai stylist" && (
-          <section className="max-w-3xl mx-auto">
+          <section className="max-w-4xl mx-auto">
             <div className="text-center mb-8">
-              <h2 className="text-4xl font-bold mb-2">AI Personal Stylist</h2>
-              <p className="text-muted-foreground">Let AI create your perfect outfit</p>
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full mb-4">
+                <Brain className="h-5 w-5 text-primary animate-pulse" />
+                <span className="font-semibold text-primary">AI-Powered Personal Stylist</span>
+              </div>
+              <h2 className="text-5xl font-bold mb-4 bg-gradient-to-r from-primary via-primary-hover to-secondary bg-clip-text text-transparent">
+                Your AI Fashion Designer
+              </h2>
+              <p className="text-muted-foreground text-lg">Advanced algorithms analyzing style, budget, and occasion for perfect recommendations</p>
             </div>
 
             <Card>
@@ -249,57 +297,26 @@ const Index = () => {
                     />
                   </div>
 
-                  <Button type="submit" className="w-full" disabled={isLoading}>
+                  <Button type="submit" className="w-full text-lg py-6" disabled={isLoading}>
                     {isLoading ? (
                       <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        AI Thinking...
+                        <Brain className="mr-2 h-5 w-5 animate-pulse" />
+                        AI Processing...
                       </>
                     ) : (
                       <>
-                        <Sparkles className="mr-2 h-4 w-4" />
-                        Get AI Recommendations
+                        <Sparkles className="mr-2 h-5 w-5" />
+                        Generate AI Recommendations
                       </>
                     )}
                   </Button>
                 </form>
 
-                {recommendation && (
-                  <div className="mt-8 p-6 bg-accent/10 rounded-lg">
-                    <h3 className="text-2xl font-bold mb-4">Your AI Style Recommendation</h3>
-                    <div className="grid md:grid-cols-2 gap-6 mb-4">
-                      <div>
-                        <h4 className="font-semibold mb-2">Main Outfit</h4>
-                        <p className="text-sm font-medium">{recommendation.outfit.name}</p>
-                        <p className="text-sm text-muted-foreground mt-1">
-                          {recommendation.outfit.description}
-                        </p>
-                        <p className="text-lg font-bold text-primary mt-2">
-                          Rs. {recommendation.outfit.estimatedPrice.toLocaleString()}
-                        </p>
-                      </div>
-                      <div>
-                        <h4 className="font-semibold mb-2">Jewelry</h4>
-                        <p className="text-sm font-medium">{recommendation.jewelry.name}</p>
-                        <p className="text-sm text-muted-foreground mt-1">
-                          {recommendation.jewelry.description}
-                        </p>
-                        <p className="text-lg font-bold text-primary mt-2">
-                          Rs. {recommendation.jewelry.estimatedPrice.toLocaleString()}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="border-t pt-4">
-                      <h4 className="font-semibold mb-2">Style Tips:</h4>
-                      <ul className="list-disc list-inside space-y-1 text-sm">
-                        {recommendation.styleTips.map((tip, index) => (
-                          <li key={index}>{tip}</li>
-                        ))}
-                      </ul>
-                      <p className="text-xl font-bold text-primary mt-4">
-                        Total Cost: Rs. {recommendation.totalCost.toLocaleString()}
-                      </p>
-                    </div>
+                {isLoading && <AIThinkingAnimation />}
+
+                {recommendation && !isLoading && (
+                  <div className="mt-8">
+                    <AIRecommendationCard recommendation={recommendation} />
                   </div>
                 )}
               </CardContent>
@@ -310,58 +327,110 @@ const Index = () => {
         {activeTab === "faq chat" && (
           <section className="max-w-4xl mx-auto">
             <div className="text-center mb-8">
-              <h2 className="text-4xl font-bold mb-2">AI Fashion Assistant</h2>
-              <p className="text-muted-foreground">Ask me anything about eastern fashion!</p>
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full mb-4">
+                <MessageSquare className="h-5 w-5 text-primary animate-pulse" />
+                <span className="font-semibold text-primary">Conversational AI</span>
+              </div>
+              <h2 className="text-5xl font-bold mb-4 bg-gradient-to-r from-primary via-primary-hover to-secondary bg-clip-text text-transparent">
+                AI Fashion Assistant
+              </h2>
+              <p className="text-muted-foreground text-lg">Intelligent answers powered by advanced language models</p>
             </div>
 
-            <Card className="h-[500px] flex flex-col">
+            <Card className="h-[600px] flex flex-col border-2 border-primary/20 shadow-xl">
               <CardContent className="flex-1 overflow-y-auto p-6">
                 {messages.length === 0 ? (
-                  <div className="text-center text-muted-foreground mt-20">
-                    <MessageSquare className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p>Ask me about eastern fashion, sizing, shipping, or style advice!</p>
+                  <div className="text-center text-muted-foreground mt-24">
+                    <div className="relative inline-block mb-6">
+                      <div className="absolute inset-0 animate-ping">
+                        <Brain className="h-16 w-16 mx-auto opacity-20 text-primary" />
+                      </div>
+                      <Brain className="h-16 w-16 mx-auto text-primary relative z-10" />
+                    </div>
+                    <h3 className="text-xl font-semibold mb-2 text-foreground">AI Fashion Expert Ready</h3>
+                    <p className="text-lg mb-6">Ask me anything about eastern fashion, styling, or our products!</p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-2xl mx-auto text-left">
+                      {[
+                        "What's trending in eastern wear?",
+                        "How do I choose jewelry for my outfit?",
+                        "What's your return policy?",
+                        "Style tips for wedding season?"
+                      ].map((suggestion, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => setUserInput(suggestion)}
+                          className="p-3 bg-muted hover:bg-primary/10 rounded-lg text-sm transition-colors border border-border hover:border-primary/40 text-left"
+                        >
+                          <Sparkles className="h-4 w-4 inline mr-2 text-primary" />
+                          {suggestion}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 ) : (
                   <div className="space-y-4">
                     {messages.map((msg, index) => (
                       <div
                         key={index}
-                        className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+                        className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} animate-in fade-in-50 slide-in-from-bottom-5`}
                       >
                         <div
-                          className={`max-w-[80%] p-4 rounded-lg ${
+                          className={`max-w-[80%] p-4 rounded-xl shadow-lg ${
                             msg.role === "user"
-                              ? "bg-primary text-primary-foreground"
-                              : "bg-muted"
+                              ? "bg-gradient-to-r from-primary to-primary-hover text-primary-foreground"
+                              : "bg-card border-2 border-primary/20"
                           }`}
                         >
-                          {msg.content}
+                          {msg.role === "assistant" && (
+                            <div className="flex items-center gap-2 mb-2 text-primary">
+                              <Brain className="h-4 w-4" />
+                              <span className="text-xs font-semibold">AI Assistant</span>
+                            </div>
+                          )}
+                          <p className="leading-relaxed">{msg.content}</p>
                         </div>
                       </div>
                     ))}
                     {isLoading && (
-                      <div className="flex justify-start">
-                        <div className="bg-muted p-4 rounded-lg">
-                          <Loader2 className="h-4 w-4 animate-spin" />
+                      <div className="flex justify-start animate-in fade-in-50">
+                        <div className="bg-card border-2 border-primary/20 p-4 rounded-xl shadow-lg">
+                          <div className="flex items-center gap-3">
+                            <Brain className="h-5 w-5 text-primary animate-pulse" />
+                            <span className="text-sm font-medium text-muted-foreground">AI is thinking...</span>
+                            <div className="flex gap-1">
+                              {[0, 1, 2].map((i) => (
+                                <div
+                                  key={i}
+                                  className="h-2 w-2 bg-primary rounded-full animate-bounce"
+                                  style={{ animationDelay: `${i * 0.15}s` }}
+                                />
+                              ))}
+                            </div>
+                          </div>
                         </div>
                       </div>
                     )}
                   </div>
                 )}
               </CardContent>
-              <div className="p-4 border-t">
-                <div className="flex gap-2">
+              <div className="p-6 border-t bg-muted/30">
+                <div className="flex gap-3">
                   <Input
                     value={userInput}
                     onChange={(e) => setUserInput(e.target.value)}
                     onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
-                    placeholder="Ask about fashion, sizing, shipping..."
+                    placeholder="Ask anything about fashion, products, or styling..."
                     disabled={isLoading}
+                    className="text-base py-6 border-2 focus:border-primary"
                   />
-                  <Button onClick={handleSendMessage} disabled={isLoading}>
-                    <Send className="h-4 w-4" />
+                  <Button onClick={handleSendMessage} disabled={isLoading} size="lg" className="px-8">
+                    <Send className="h-5 w-5" />
                   </Button>
                 </div>
+                <p className="text-xs text-muted-foreground mt-2 text-center">
+                  <Sparkles className="h-3 w-3 inline mr-1" />
+                  Powered by advanced AI language models
+                </p>
               </div>
             </Card>
           </section>
