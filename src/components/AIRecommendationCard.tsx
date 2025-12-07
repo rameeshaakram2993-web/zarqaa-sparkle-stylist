@@ -1,120 +1,241 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Sparkles, TrendingUp, Award } from "lucide-react";
+import { Sparkles, Brain, Zap, Star, CheckCircle, TrendingUp, Target, Dna, BookOpen } from "lucide-react";
+import product1 from "@/assets/product-1.jpg";
+import product2 from "@/assets/product-2.jpg";
+import product3 from "@/assets/product-3.jpg";
+import product4 from "@/assets/product-4.jpg";
+import product5 from "@/assets/product-5.jpg";
+import product6 from "@/assets/product-6.jpg";
+
+const productImages: Record<string, string> = {
+  "product-1.jpg": product1,
+  "product-2.jpg": product2,
+  "product-3.jpg": product3,
+  "product-4.jpg": product4,
+  "product-5.jpg": product5,
+  "product-6.jpg": product6,
+};
+
+interface RecommendationItem {
+  id?: string;
+  name: string;
+  description: string;
+  estimatedPrice: number;
+  category: string;
+  image_url?: string;
+  occasion?: string;
+}
+
+interface AlgorithmMetrics {
+  aStarScore: number;
+  geneticFitness: number;
+  expertScore: number;
+  validationPassed: boolean;
+}
 
 interface AIRecommendationCardProps {
   recommendation: {
-    outfit: { name: string; description: string; estimatedPrice: number; category: string };
-    jewelry: { name: string; description: string; estimatedPrice: number; category: string };
+    outfit: RecommendationItem | null;
+    jewelry: RecommendationItem | null;
     styleTips: string[];
     totalCost: number;
+    algorithmMetrics?: AlgorithmMetrics;
   };
 }
 
+const getProductImage = (imageUrl: string | undefined): string => {
+  if (!imageUrl) return product1;
+  const imageName = imageUrl.split('/').pop() || '';
+  return productImages[imageName] || product1;
+};
+
 export const AIRecommendationCard = ({ recommendation }: AIRecommendationCardProps) => {
+  const metrics = recommendation.algorithmMetrics;
+  
   return (
-    <div className="space-y-6 animate-in fade-in-50 slide-in-from-bottom-10 duration-700">
-      {/* AI Badge */}
-      <div className="flex items-center justify-center gap-2 p-3 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-lg border-2 border-primary/20">
-        <Sparkles className="h-5 w-5 text-primary animate-pulse" />
-        <span className="font-bold text-lg">AI-Generated Style Recommendation</span>
-        <Award className="h-5 w-5 text-secondary" />
+    <div className="space-y-6 animate-in fade-in-50 slide-in-from-bottom-5 duration-700">
+      {/* Algorithm Performance Dashboard */}
+      {metrics && (
+        <Card className="border-2 border-primary/30 bg-gradient-to-br from-primary/5 via-background to-secondary/5 overflow-hidden">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <Brain className="h-5 w-5 text-primary animate-pulse" />
+              <h3 className="font-bold text-lg">AI Algorithm Performance</h3>
+              {metrics.validationPassed && (
+                <Badge className="bg-green-500 text-white ml-auto">
+                  <CheckCircle className="h-3 w-3 mr-1" />
+                  Validated
+                </Badge>
+              )}
+            </div>
+            
+            <div className="grid grid-cols-3 gap-4">
+              {/* A* Search */}
+              <div className="bg-card rounded-lg p-4 border border-border">
+                <div className="flex items-center gap-2 mb-2">
+                  <Target className="h-4 w-4 text-blue-500" />
+                  <span className="text-sm font-semibold">A* Search</span>
+                </div>
+                <div className="text-2xl font-bold text-blue-500">
+                  {((1 - metrics.aStarScore) * 100).toFixed(0)}%
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">Optimal Path Found</p>
+              </div>
+              
+              {/* Genetic Algorithm */}
+              <div className="bg-card rounded-lg p-4 border border-border">
+                <div className="flex items-center gap-2 mb-2">
+                  <Dna className="h-4 w-4 text-purple-500" />
+                  <span className="text-sm font-semibold">Genetic</span>
+                </div>
+                <div className="text-2xl font-bold text-purple-500">
+                  {metrics.geneticFitness.toFixed(0)}
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">Fitness Score</p>
+              </div>
+              
+              {/* Expert System */}
+              <div className="bg-card rounded-lg p-4 border border-border">
+                <div className="flex items-center gap-2 mb-2">
+                  <BookOpen className="h-4 w-4 text-amber-500" />
+                  <span className="text-sm font-semibold">Expert</span>
+                </div>
+                <div className="text-2xl font-bold text-amber-500">
+                  {metrics.expertScore}
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">Rule Score</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Header */}
+      <div className="text-center">
+        <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-full mb-2">
+          <Sparkles className="h-4 w-4 text-primary animate-spin" style={{ animationDuration: '3s' }} />
+          <span className="font-semibold text-primary">AI-Generated Recommendation</span>
+        </div>
       </div>
 
-      {/* Main Recommendations */}
+      {/* Products Grid with Images */}
       <div className="grid md:grid-cols-2 gap-6">
         {/* Outfit Card */}
-        <Card className="overflow-hidden border-2 border-primary/20 hover:border-primary/40 transition-all hover:shadow-[0_0_30px_rgba(128,0,32,0.3)] hover:scale-105 duration-300">
-          <div className="bg-gradient-to-br from-primary/5 to-primary/10 p-4">
-            <div className="flex items-center gap-2 mb-3">
-              <TrendingUp className="h-5 w-5 text-primary" />
-              <h4 className="font-bold text-lg">Perfect Outfit</h4>
-              <Badge variant="secondary" className="ml-auto">
-                {recommendation.outfit.category}
+        {recommendation.outfit && (
+          <Card className="overflow-hidden border-2 border-primary/20 hover:border-primary/40 transition-all hover:shadow-xl group">
+            <div className="relative aspect-square overflow-hidden">
+              <img 
+                src={getProductImage(recommendation.outfit.image_url)} 
+                alt={recommendation.outfit.name}
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+              <Badge className="absolute top-3 left-3 bg-primary text-primary-foreground">
+                <Zap className="h-3 w-3 mr-1" />
+                A* Optimized
               </Badge>
+              <div className="absolute bottom-3 left-3 right-3 text-white">
+                <h4 className="font-bold text-lg drop-shadow-lg">{recommendation.outfit.name}</h4>
+                <p className="text-2xl font-bold drop-shadow-lg">
+                  Rs. {recommendation.outfit.estimatedPrice.toLocaleString()}
+                </p>
+              </div>
             </div>
-          </div>
-          <CardContent className="p-6">
-            <h3 className="text-xl font-bold mb-3 text-primary">{recommendation.outfit.name}</h3>
-            <p className="text-muted-foreground mb-4 leading-relaxed">
-              {recommendation.outfit.description}
-            </p>
-            <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-bold text-primary">
-                Rs. {recommendation.outfit.estimatedPrice.toLocaleString()}
-              </span>
-              <Sparkles className="h-5 w-5 text-secondary" />
-            </div>
-          </CardContent>
-        </Card>
+            <CardContent className="p-4">
+              <p className="text-muted-foreground text-sm mb-3">{recommendation.outfit.description}</p>
+              <div className="flex gap-2">
+                <Badge variant="secondary">{recommendation.outfit.category}</Badge>
+                {recommendation.outfit.occasion && (
+                  <Badge variant="outline">{recommendation.outfit.occasion}</Badge>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Jewelry Card */}
-        <Card className="overflow-hidden border-2 border-secondary/30 hover:border-secondary/50 transition-all hover:shadow-[0_0_30px_rgba(255,215,0,0.2)] hover:scale-105 duration-300">
-          <div className="bg-gradient-to-br from-secondary/5 to-secondary/10 p-4">
-            <div className="flex items-center gap-2 mb-3">
-              <Sparkles className="h-5 w-5 text-secondary" />
-              <h4 className="font-bold text-lg">Matching Jewelry</h4>
-              <Badge variant="outline" className="ml-auto border-secondary">
-                {recommendation.jewelry.category}
+        {recommendation.jewelry && (
+          <Card className="overflow-hidden border-2 border-secondary/20 hover:border-secondary/40 transition-all hover:shadow-xl group">
+            <div className="relative aspect-square overflow-hidden">
+              <img 
+                src={getProductImage(recommendation.jewelry.image_url)} 
+                alt={recommendation.jewelry.name}
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+              <Badge className="absolute top-3 left-3 bg-secondary text-secondary-foreground">
+                <Dna className="h-3 w-3 mr-1" />
+                Genetically Evolved
               </Badge>
+              <div className="absolute bottom-3 left-3 right-3 text-white">
+                <h4 className="font-bold text-lg drop-shadow-lg">{recommendation.jewelry.name}</h4>
+                <p className="text-2xl font-bold drop-shadow-lg">
+                  Rs. {recommendation.jewelry.estimatedPrice.toLocaleString()}
+                </p>
+              </div>
             </div>
-          </div>
-          <CardContent className="p-6">
-            <h3 className="text-xl font-bold mb-3 text-secondary">{recommendation.jewelry.name}</h3>
-            <p className="text-muted-foreground mb-4 leading-relaxed">
-              {recommendation.jewelry.description}
-            </p>
-            <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-bold text-secondary">
-                Rs. {recommendation.jewelry.estimatedPrice.toLocaleString()}
-              </span>
-              <Award className="h-5 w-5 text-secondary" />
-            </div>
-          </CardContent>
-        </Card>
+            <CardContent className="p-4">
+              <p className="text-muted-foreground text-sm mb-3">{recommendation.jewelry.description}</p>
+              <div className="flex gap-2">
+                <Badge variant="secondary">{recommendation.jewelry.category}</Badge>
+                {recommendation.jewelry.occasion && (
+                  <Badge variant="outline">{recommendation.jewelry.occasion}</Badge>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
 
-      {/* AI Style Tips */}
-      <Card className="border-2 border-primary/20 bg-gradient-to-br from-background to-primary/5">
+      {/* Expert System Tips */}
+      <Card className="border-2 border-amber-500/20 bg-gradient-to-r from-amber-500/5 to-transparent">
         <CardContent className="p-6">
           <div className="flex items-center gap-2 mb-4">
-            <Sparkles className="h-5 w-5 text-primary animate-pulse" />
-            <h4 className="font-bold text-lg">AI Style Intelligence</h4>
+            <BookOpen className="h-5 w-5 text-amber-500" />
+            <h4 className="font-bold text-lg">Expert System Style Analysis</h4>
           </div>
-          <ul className="space-y-3">
+          <ul className="space-y-2">
             {recommendation.styleTips.map((tip, index) => (
-              <li
-                key={index}
-                className="flex items-start gap-3 p-3 rounded-lg bg-card hover:bg-muted/50 transition-colors animate-in fade-in-50 slide-in-from-left"
+              <li 
+                key={index} 
+                className="flex items-start gap-2 text-sm animate-in fade-in-50 slide-in-from-left-3"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
-                <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <span className="text-xs font-bold text-primary">{index + 1}</span>
-                </div>
-                <span className="text-sm leading-relaxed">{tip}</span>
+                {tip.startsWith("✓") ? (
+                  <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                ) : tip.startsWith("💡") ? (
+                  <Star className="h-4 w-4 text-amber-500 mt-0.5 flex-shrink-0" />
+                ) : (
+                  <TrendingUp className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                )}
+                <span>{tip.replace(/^[✓💡]\s*/, '')}</span>
               </li>
             ))}
           </ul>
         </CardContent>
       </Card>
 
-      {/* Total Cost Banner */}
-      <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-primary via-primary-hover to-secondary p-6 text-center">
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iYSIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBwYXR0ZXJuVHJhbnNmb3JtPSJyb3RhdGUoNDUpIj48cGF0aCBkPSJNLTEwIDMwaDYwIiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMSIgb3BhY2l0eT0iLjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjYSkiLz48L3N2Zz4=')] opacity-30" />
-        <div className="relative z-10">
-          <p className="text-primary-foreground/80 text-sm font-medium mb-2">
-            AI-Optimized Total Investment
-          </p>
-          <p className="text-4xl font-bold text-primary-foreground flex items-center justify-center gap-3">
-            <Sparkles className="h-8 w-8" />
-            Rs. {recommendation.totalCost.toLocaleString()}
-            <Award className="h-8 w-8" />
-          </p>
-          <p className="text-primary-foreground/70 text-xs mt-2">
-            ✨ Perfectly balanced for your budget and style
-          </p>
-        </div>
-      </div>
+      {/* Total Cost */}
+      <Card className="bg-gradient-to-r from-primary to-primary-hover text-primary-foreground overflow-hidden">
+        <CardContent className="p-6 flex items-center justify-between">
+          <div>
+            <p className="text-sm opacity-90 mb-1">AI-Optimized Total Investment</p>
+            <p className="text-4xl font-bold">Rs. {recommendation.totalCost.toLocaleString()}</p>
+          </div>
+          <div className="text-right">
+            <div className="flex items-center gap-2 text-sm opacity-90 mb-2">
+              <Brain className="h-4 w-4" />
+              <span>3 Algorithms Combined</span>
+            </div>
+            <div className="flex gap-1">
+              <Badge variant="secondary" className="bg-white/20 text-white border-0 text-xs">A*</Badge>
+              <Badge variant="secondary" className="bg-white/20 text-white border-0 text-xs">GA</Badge>
+              <Badge variant="secondary" className="bg-white/20 text-white border-0 text-xs">Expert</Badge>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };
