@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Target, Dna, BookOpen, Zap, Brain, TrendingUp, Sparkles } from "lucide-react";
+import { Target, Dna, BookOpen, Zap, Brain, ArrowRight, Sparkles } from "lucide-react";
 
 export const AIFeatureShowcase = () => {
   const algorithms = [
@@ -8,9 +8,10 @@ export const AIFeatureShowcase = () => {
       icon: Target,
       name: "A* Search Algorithm",
       badge: "Pathfinding",
-      color: "text-blue-500",
-      bgColor: "bg-blue-500/10",
-      borderColor: "border-blue-500/30",
+      gradient: "from-blue-500 to-cyan-500",
+      bgGradient: "from-blue-500/10 to-cyan-500/10",
+      iconBg: "bg-blue-500/10",
+      textColor: "text-blue-500",
       description: "Efficiently finds optimal outfit combinations from thousands of possibilities using heuristic-based search.",
       features: [
         "O(n log n) time complexity",
@@ -18,16 +19,17 @@ export const AIFeatureShowcase = () => {
         "Occasion-based heuristics",
         "Fastest path to perfect outfits"
       ],
-      metric: "< 50ms",
+      metric: "<50ms",
       metricLabel: "Search Time"
     },
     {
       icon: Dna,
       name: "Genetic Algorithm",
       badge: "Evolution",
-      color: "text-purple-500",
-      bgColor: "bg-purple-500/10",
-      borderColor: "border-purple-500/30",
+      gradient: "from-purple-500 to-pink-500",
+      bgGradient: "from-purple-500/10 to-pink-500/10",
+      iconBg: "bg-purple-500/10",
+      textColor: "text-purple-500",
       description: "Evolves creative and diverse outfit suggestions through simulated natural selection and mutation.",
       features: [
         "20+ generations evolved",
@@ -42,9 +44,10 @@ export const AIFeatureShowcase = () => {
       icon: BookOpen,
       name: "Expert System",
       badge: "Knowledge-Based",
-      color: "text-amber-500",
-      bgColor: "bg-amber-500/10",
-      borderColor: "border-amber-500/30",
+      gradient: "from-amber-500 to-orange-500",
+      bgGradient: "from-amber-500/10 to-orange-500/10",
+      iconBg: "bg-amber-500/10",
+      textColor: "text-amber-500",
       description: "Applies professional styling rules and fashion expertise to validate and enhance recommendations.",
       features: [
         "6+ validation rules",
@@ -57,117 +60,110 @@ export const AIFeatureShowcase = () => {
     }
   ];
 
+  const steps = [
+    { icon: Target, color: "blue", title: "A* Search", desc: "Finds optimal combinations" },
+    { icon: Dna, color: "purple", title: "Genetic Evolution", desc: "Evolves diverse alternatives" },
+    { icon: BookOpen, color: "amber", title: "Expert Validation", desc: "Validates against rules" },
+    { icon: Sparkles, color: "gradient", title: "Perfect Outfit", desc: "AI-curated recommendation" },
+  ];
+
   return (
-    <section className="py-16">
-      <div className="text-center mb-12">
-        <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full mb-4">
-          <Brain className="h-5 w-5 text-primary animate-pulse" />
-          <span className="font-semibold text-primary">AI Technology Stack</span>
-        </div>
-        <h2 className="text-4xl font-bold mb-4">
-          Three Powerful Algorithms Working Together
+    <section className="py-20">
+      <div className="text-center mb-16">
+        <Badge className="mb-4 bg-primary/10 text-primary border-primary/20 px-4 py-2">
+          <Brain className="h-4 w-4 mr-2 animate-pulse" />
+          AI Technology Stack
+        </Badge>
+        <h2 className="text-4xl md:text-5xl font-bold font-display mb-4 gradient-text">
+          Three Powerful Algorithms
         </h2>
         <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
           Our fashion AI combines multiple algorithmic approaches to deliver the most intelligent styling recommendations
         </p>
       </div>
 
-      <div className="grid md:grid-cols-3 gap-6 mb-12">
+      <div className="grid md:grid-cols-3 gap-6 mb-20">
         {algorithms.map((algo, index) => (
           <Card 
             key={algo.name}
-            className={`relative overflow-hidden border-2 ${algo.borderColor} hover:shadow-xl transition-all duration-300 group`}
+            className="glass-card relative overflow-hidden group hover-lift border-0"
           >
-            <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${
-              index === 0 ? "from-blue-500 to-blue-400" :
-              index === 1 ? "from-purple-500 to-purple-400" :
-              "from-amber-500 to-amber-400"
-            }`} />
+            {/* Top gradient bar */}
+            <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${algo.gradient}`} />
             
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className={`p-3 rounded-xl ${algo.bgColor} group-hover:scale-110 transition-transform`}>
-                  <algo.icon className={`h-6 w-6 ${algo.color}`} />
+            {/* Hover glow effect */}
+            <div className={`absolute inset-0 bg-gradient-to-br ${algo.bgGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+            
+            <CardContent className="relative p-8">
+              <div className="flex items-center justify-between mb-6">
+                <div className={`w-14 h-14 rounded-2xl ${algo.iconBg} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
+                  <algo.icon className={`h-7 w-7 ${algo.textColor}`} />
                 </div>
-                <Badge variant="outline" className={algo.color}>
+                <Badge variant="outline" className={`${algo.textColor} border-current/30`}>
                   {algo.badge}
                 </Badge>
               </div>
               
-              <h3 className="text-xl font-bold mb-2">{algo.name}</h3>
-              <p className="text-muted-foreground text-sm mb-4">{algo.description}</p>
+              <h3 className="text-xl font-bold font-display mb-3">{algo.name}</h3>
+              <p className="text-muted-foreground text-sm mb-6 leading-relaxed">{algo.description}</p>
               
-              <ul className="space-y-2 mb-6">
+              <ul className="space-y-3 mb-8">
                 {algo.features.map((feature, idx) => (
-                  <li key={idx} className="flex items-center gap-2 text-sm">
-                    <Zap className={`h-3 w-3 ${algo.color}`} />
+                  <li key={idx} className="flex items-center gap-3 text-sm">
+                    <div className={`w-5 h-5 rounded-full ${algo.iconBg} flex items-center justify-center`}>
+                      <Zap className={`h-3 w-3 ${algo.textColor}`} />
+                    </div>
                     <span>{feature}</span>
                   </li>
                 ))}
               </ul>
               
-              <div className={`p-4 rounded-lg ${algo.bgColor}`}>
-                <div className={`text-3xl font-bold ${algo.color}`}>{algo.metric}</div>
-                <div className="text-xs text-muted-foreground">{algo.metricLabel}</div>
+              <div className={`p-5 rounded-2xl bg-gradient-to-r ${algo.bgGradient}`}>
+                <div className={`text-4xl font-bold font-display ${algo.textColor}`}>{algo.metric}</div>
+                <div className="text-sm text-muted-foreground mt-1">{algo.metricLabel}</div>
               </div>
             </CardContent>
           </Card>
         ))}
       </div>
 
-      {/* How It Works */}
-      <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 via-background to-secondary/5">
-        <CardContent className="p-8">
-          <h3 className="text-2xl font-bold text-center mb-8">How Our AI Works Together</h3>
+      {/* How It Works - Modern Timeline */}
+      <Card className="glass-card border-0 overflow-hidden">
+        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-secondary to-accent" />
+        <CardContent className="p-12">
+          <h3 className="text-2xl md:text-3xl font-bold font-display text-center mb-12">
+            How Our AI Works Together
+          </h3>
           
-          <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8">
-            {/* Step 1 */}
-            <div className="flex flex-col items-center text-center max-w-[200px]">
-              <div className="w-16 h-16 rounded-full bg-blue-500/20 flex items-center justify-center mb-3">
-                <Target className="h-8 w-8 text-blue-500" />
+          <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-0">
+            {steps.map((step, idx) => (
+              <div key={idx} className="flex items-center">
+                <div className="flex flex-col items-center text-center">
+                  <div className={`w-20 h-20 rounded-2xl flex items-center justify-center mb-4 ${
+                    step.color === "gradient" 
+                      ? "bg-gradient-to-br from-primary to-secondary" 
+                      : step.color === "blue" ? "bg-blue-500/10"
+                      : step.color === "purple" ? "bg-purple-500/10"
+                      : "bg-amber-500/10"
+                  }`}>
+                    <step.icon className={`h-10 w-10 ${
+                      step.color === "gradient" ? "text-primary-foreground"
+                      : step.color === "blue" ? "text-blue-500"
+                      : step.color === "purple" ? "text-purple-500"
+                      : "text-amber-500"
+                    }`} />
+                  </div>
+                  <h4 className="font-semibold font-display mb-1">{step.title}</h4>
+                  <p className="text-xs text-muted-foreground max-w-[140px]">{step.desc}</p>
+                </div>
+                
+                {idx < steps.length - 1 && (
+                  <div className="hidden md:block mx-6">
+                    <ArrowRight className="h-6 w-6 text-muted-foreground/50" />
+                  </div>
+                )}
               </div>
-              <h4 className="font-semibold mb-1">1. A* Search</h4>
-              <p className="text-xs text-muted-foreground">Finds optimal combinations using budget & occasion heuristics</p>
-            </div>
-            
-            <div className="hidden md:block">
-              <TrendingUp className="h-6 w-6 text-muted-foreground rotate-90 md:rotate-0" />
-            </div>
-            
-            {/* Step 2 */}
-            <div className="flex flex-col items-center text-center max-w-[200px]">
-              <div className="w-16 h-16 rounded-full bg-purple-500/20 flex items-center justify-center mb-3">
-                <Dna className="h-8 w-8 text-purple-500" />
-              </div>
-              <h4 className="font-semibold mb-1">2. Genetic Evolution</h4>
-              <p className="text-xs text-muted-foreground">Evolves diverse alternatives through selection & mutation</p>
-            </div>
-            
-            <div className="hidden md:block">
-              <TrendingUp className="h-6 w-6 text-muted-foreground rotate-90 md:rotate-0" />
-            </div>
-            
-            {/* Step 3 */}
-            <div className="flex flex-col items-center text-center max-w-[200px]">
-              <div className="w-16 h-16 rounded-full bg-amber-500/20 flex items-center justify-center mb-3">
-                <BookOpen className="h-8 w-8 text-amber-500" />
-              </div>
-              <h4 className="font-semibold mb-1">3. Expert Validation</h4>
-              <p className="text-xs text-muted-foreground">Validates against fashion rules & generates style tips</p>
-            </div>
-            
-            <div className="hidden md:block">
-              <TrendingUp className="h-6 w-6 text-muted-foreground rotate-90 md:rotate-0" />
-            </div>
-            
-            {/* Result */}
-            <div className="flex flex-col items-center text-center max-w-[200px]">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-r from-primary to-secondary flex items-center justify-center mb-3">
-                <Sparkles className="h-8 w-8 text-white" />
-              </div>
-              <h4 className="font-semibold mb-1">Perfect Outfit</h4>
-              <p className="text-xs text-muted-foreground">AI-curated recommendation with matching products</p>
-            </div>
+            ))}
           </div>
         </CardContent>
       </Card>
