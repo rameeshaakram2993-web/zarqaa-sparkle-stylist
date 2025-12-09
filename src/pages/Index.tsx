@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Sparkles, MessageSquare, ShoppingBag, Send, Brain, Zap, Star, ArrowRight, ChevronRight } from "lucide-react";
+import { Sparkles, MessageSquare, ShoppingBag, Send, Brain, Zap, Star, ArrowRight, ChevronRight, Dna } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { AIThinkingAnimation } from "@/components/AIThinkingAnimation";
@@ -257,6 +258,17 @@ const Index = () => {
                 </div>
               </div>
             </section>
+            
+            {/* Algorithm Visualization Link */}
+            <div className="flex justify-center mb-12">
+              <Link to="/algorithms">
+                <Button variant="outline" size="lg" className="group gap-3 px-6 py-6 rounded-xl border-primary/30 hover:border-primary hover:bg-primary/5">
+                  <Dna className="h-5 w-5 text-primary group-hover:animate-pulse" />
+                  <span className="font-display">Explore AI Algorithm Visualization</span>
+                  <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </Link>
+            </div>
             
             <AIFeatureShowcase />
           </>
