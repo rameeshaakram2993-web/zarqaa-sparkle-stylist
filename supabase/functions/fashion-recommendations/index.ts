@@ -109,8 +109,26 @@ function geneticAlgorithm(
     return { outfit: null, jewelry: null, fitness: 0 };
   }
   
+  // Pre-filter valid combinations that are within budget
+  const validPairs: Array<{ outfitIndex: number; jewelryIndex: number }> = [];
+  for (let oi = 0; oi < outfits.length; oi++) {
+    for (let ji = 0; ji < jewelry.length; ji++) {
+      if (outfits[oi].price + jewelry[ji].price <= budget) {
+        validPairs.push({ outfitIndex: oi, jewelryIndex: ji });
+      }
+    }
+  }
+  
+  // If no valid pairs exist within budget, return null
+  if (validPairs.length === 0) {
+    console.log("⚠️ No valid combinations within budget of", budget);
+    return { outfit: null, jewelry: null, fitness: 0 };
+  }
+  
+  console.log("📊 Found", validPairs.length, "valid combinations within budget");
+  
   // Fitness function
-  const calculateFitness = (chromosome: Chromosome): number => {
+  const calculateFitness = (chromosome: { outfitIndex: number; jewelryIndex: number }): number => {
     const outfit = outfits[chromosome.outfitIndex];
     const jewel = jewelry[chromosome.jewelryIndex];
     const totalCost = outfit.price + jewel.price;
@@ -139,12 +157,13 @@ function geneticAlgorithm(
     return fitness;
   };
   
-  // Initialize population
-  let population: Chromosome[] = [];
+  // Initialize population from valid pairs only
+  let population: Array<{ outfitIndex: number; jewelryIndex: number; fitness: number }> = [];
   for (let i = 0; i < populationSize; i++) {
-    const chromosome: Chromosome = {
-      outfitIndex: Math.floor(Math.random() * outfits.length),
-      jewelryIndex: Math.floor(Math.random() * jewelry.length),
+    const randomPair = validPairs[Math.floor(Math.random() * validPairs.length)];
+    const chromosome = {
+      outfitIndex: randomPair.outfitIndex,
+      jewelryIndex: randomPair.jewelryIndex,
       fitness: 0
     };
     chromosome.fitness = calculateFitness(chromosome);
@@ -154,7 +173,7 @@ function geneticAlgorithm(
   // Evolution loop
   for (let gen = 0; gen < generations; gen++) {
     // Selection: Tournament selection
-    const newPopulation: Chromosome[] = [];
+    const newPopulation: typeof population = [];
     
     while (newPopulation.length < populationSize) {
       // Tournament selection
@@ -170,19 +189,25 @@ function geneticAlgorithm(
       }
       const parent2 = tournament2.reduce((a, b) => a.fitness > b.fitness ? a : b);
       
-      // Crossover
-      const child: Chromosome = {
+      // Crossover - but ensure result is valid
+      let child = {
         outfitIndex: Math.random() > 0.5 ? parent1.outfitIndex : parent2.outfitIndex,
         jewelryIndex: Math.random() > 0.5 ? parent1.jewelryIndex : parent2.jewelryIndex,
         fitness: 0
       };
       
-      // Mutation (10% chance)
-      if (Math.random() < 0.1) {
-        child.outfitIndex = Math.floor(Math.random() * outfits.length);
+      // Check if crossover result is valid, if not pick from valid pairs
+      if (outfits[child.outfitIndex].price + jewelry[child.jewelryIndex].price > budget) {
+        const randomPair = validPairs[Math.floor(Math.random() * validPairs.length)];
+        child.outfitIndex = randomPair.outfitIndex;
+        child.jewelryIndex = randomPair.jewelryIndex;
       }
+      
+      // Mutation (10% chance) - but stay within valid pairs
       if (Math.random() < 0.1) {
-        child.jewelryIndex = Math.floor(Math.random() * jewelry.length);
+        const randomPair = validPairs[Math.floor(Math.random() * validPairs.length)];
+        child.outfitIndex = randomPair.outfitIndex;
+        child.jewelryIndex = randomPair.jewelryIndex;
       }
       
       child.fitness = calculateFitness(child);
@@ -357,6 +382,38 @@ Deno.serve(async (req) => {
     // Choose best result (prefer A* for optimal, fallback to genetic for creativity)
     const selectedOutfit = aStarResult.outfit || geneticResult.outfit;
     const selectedJewelry = aStarResult.jewelry || geneticResult.jewelry;
+    
+    // If no valid combination found within budget, return helpful error
+    if (!selectedOutfit || !selectedJewelry) {
+      const minOutfitPrice = Math.min(...outfits.map(o => o.price));
+      const minJewelryPrice = Math.min(...jewelry.map(j => j.price));
+      const minTotalRequired = minOutfitPrice + minJewelryPrice;
+      
+      console.log("⚠️ No valid combination within budget. Minimum required:", minTotalRequired);
+      
+      return new Response(
+        JSON.stringify({
+          outfit: null,
+          jewelry: null,
+          styleTips: [
+            `💡 Your budget of Rs. ${budget.toLocaleString()} is below the minimum required (Rs. ${minTotalRequired.toLocaleString()})`,
+            `💡 Cheapest outfit available: Rs. ${minOutfitPrice.toLocaleString()}`,
+            `💡 Cheapest jewelry available: Rs. ${minJewelryPrice.toLocaleString()}`,
+            `💡 Please increase your budget to at least Rs. ${minTotalRequired.toLocaleString()} for recommendations`
+          ],
+          totalCost: 0,
+          algorithmMetrics: {
+            aStarScore: aStarResult.score,
+            geneticFitness: geneticResult.fitness,
+            expertScore: 0,
+            validationPassed: false
+          },
+          budgetError: true,
+          minimumRequired: minTotalRequired
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
     
     const expertResult = expertSystem(selectedOutfit, selectedJewelry, occasion);
 

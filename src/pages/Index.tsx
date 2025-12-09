@@ -128,10 +128,20 @@ const Index = () => {
       if (error) throw error;
 
       setRecommendation(data);
-      toast({
-        title: "Recommendations Ready!",
-        description: "AI has styled a perfect outfit for you.",
-      });
+      
+      // Check if budget was too low
+      if (data.budgetError) {
+        toast({
+          title: "Budget Too Low",
+          description: `Minimum budget required is Rs. ${data.minimumRequired?.toLocaleString()}. Please increase your budget.`,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Recommendations Ready!",
+          description: "AI has styled a perfect outfit for you.",
+        });
+      }
     } catch (error: any) {
       console.error("Error:", error);
       toast({
