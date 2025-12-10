@@ -383,23 +383,22 @@ Deno.serve(async (req) => {
     const selectedOutfit = aStarResult.outfit || geneticResult.outfit;
     const selectedJewelry = aStarResult.jewelry || geneticResult.jewelry;
     
-    // If no valid combination found within budget, return helpful error
+    // If no valid combination found within budget, return style tips only
     if (!selectedOutfit || !selectedJewelry) {
-      const minOutfitPrice = Math.min(...outfits.map(o => o.price));
-      const minJewelryPrice = Math.min(...jewelry.map(j => j.price));
-      const minTotalRequired = minOutfitPrice + minJewelryPrice;
-      
-      console.log("⚠️ No valid combination within budget. Minimum required:", minTotalRequired);
+      console.log("⚠️ No products available within budget of", budget);
       
       return new Response(
         JSON.stringify({
           outfit: null,
           jewelry: null,
+          noProductsAvailable: true,
           styleTips: [
-            `💡 Your budget of Rs. ${budget.toLocaleString()} is below the minimum required (Rs. ${minTotalRequired.toLocaleString()})`,
-            `💡 Cheapest outfit available: Rs. ${minOutfitPrice.toLocaleString()}`,
-            `💡 Cheapest jewelry available: Rs. ${minJewelryPrice.toLocaleString()}`,
-            `💡 Please increase your budget to at least Rs. ${minTotalRequired.toLocaleString()} for recommendations`
+            `We don't have products matching your budget of Rs. ${budget.toLocaleString()}`,
+            `For ${occasion} occasions, consider classic silhouettes that never go out of style`,
+            "Accessorize with statement pieces to elevate any outfit",
+            "Mix and match textures for a rich, layered look",
+            `${preferences || "Traditional"} styles work beautifully with coordinated color palettes`,
+            "Visit our store for more affordable options coming soon!"
           ],
           totalCost: 0,
           algorithmMetrics: {
@@ -407,9 +406,7 @@ Deno.serve(async (req) => {
             geneticFitness: geneticResult.fitness,
             expertScore: 0,
             validationPassed: false
-          },
-          budgetError: true,
-          minimumRequired: minTotalRequired
+          }
         }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
