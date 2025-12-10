@@ -268,12 +268,19 @@ const Index = () => {
               </div>
             </section>
             
-            {/* Algorithm Visualization Link */}
-            <div className="flex justify-center mb-12">
+            {/* Quick Links */}
+            <div className="flex flex-wrap justify-center gap-4 mb-12">
               <Link to="/algorithms">
                 <Button variant="outline" size="lg" className="group gap-3 px-6 py-6 rounded-xl border-primary/30 hover:border-primary hover:bg-primary/5">
                   <Dna className="h-5 w-5 text-primary group-hover:animate-pulse" />
-                  <span className="font-display">Explore AI Algorithm Visualization</span>
+                  <span className="font-display">AI Algorithm Visualization</span>
+                  <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </Link>
+              <Link to="/faq">
+                <Button variant="outline" size="lg" className="group gap-3 px-6 py-6 rounded-xl border-secondary/30 hover:border-secondary hover:bg-secondary/5">
+                  <MessageSquare className="h-5 w-5 text-secondary group-hover:animate-pulse" />
+                  <span className="font-display">FAQ Assistant</span>
                   <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
