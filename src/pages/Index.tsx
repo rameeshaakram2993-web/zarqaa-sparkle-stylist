@@ -129,12 +129,11 @@ const Index = () => {
 
       setRecommendation(data);
       
-      // Check if budget was too low
-      if (data.budgetError) {
+      // Check if no products available in budget
+      if (data.noProductsAvailable) {
         toast({
-          title: "Budget Too Low",
-          description: `Minimum budget required is Rs. ${data.minimumRequired?.toLocaleString()}. Please increase your budget.`,
-          variant: "destructive",
+          title: "No Products Available",
+          description: "We don't have products in your budget range. Here are some style tips instead!",
         });
       } else {
         toast({
