@@ -63,7 +63,7 @@ const Index = () => {
   const [stylistForm, setStylistForm] = useState({
     occasion: "wedding",
     preferences: "",
-    budget: 5000,
+    budget: 10000,
   });
 
   const fetchProducts = async () => {
@@ -358,14 +358,14 @@ const Index = () => {
                     <Slider
                       value={[stylistForm.budget]}
                       onValueChange={([value]) => setStylistForm({ ...stylistForm, budget: value })}
-                      min={1000}
-                      max={20000}
-                      step={1000}
+                      min={5000}
+                      max={25000}
+                      step={500}
                       className="py-4"
                     />
                     <div className="flex justify-between text-xs text-muted-foreground">
-                      <span>Rs. 1,000</span>
-                      <span>Rs. 20,000</span>
+                      <span>Rs. 5,000</span>
+                      <span>Rs. 25,000</span>
                     </div>
                   </div>
 
