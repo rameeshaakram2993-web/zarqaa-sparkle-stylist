@@ -31,12 +31,29 @@ function aStarSearch(
   outfits: Product[],
   jewelry: Product[],
   budget: number,
-  targetOccasion: string
+  targetOccasion: string,
+  preferences: string = ""
 ): { outfit: Product | null; jewelry: Product | null; score: number } {
-  console.log("🔍 A* Search: Finding optimal combination from", outfits.length, "outfits and", jewelry.length, "jewelry items");
+  console.log("🔍 A* Search: Finding optimal combination for occasion:", targetOccasion, "preferences:", preferences);
+  console.log("📊 Searching through", outfits.length, "outfits and", jewelry.length, "jewelry items");
   
   const openSet: SearchNode[] = [];
   let bestNode: SearchNode = { outfit: null, jewelry: null, gScore: Infinity, hScore: Infinity, fScore: Infinity };
+  
+  // Parse preferences into keywords for matching
+  const preferenceKeywords = preferences.toLowerCase().split(/[\s,]+/).filter(k => k.length > 2);
+  
+  // Occasion priority mapping (higher = more formal, should spend more)
+  const occasionPriority: Record<string, number> = {
+    'wedding': 1.0,
+    'formal': 0.9,
+    'party': 0.7,
+    'casual': 0.4,
+    'traditional': 0.8,
+    'festive': 0.85
+  };
+  
+  const targetPriority = occasionPriority[targetOccasion] || 0.5;
   
   // Generate all possible combinations as nodes
   for (const outfit of outfits) {
@@ -46,20 +63,85 @@ function aStarSearch(
       // Skip if over budget
       if (totalCost > budget) continue;
       
-      // Calculate g-score: cost efficiency (lower is better, normalized)
-      const gScore = totalCost / budget;
+      // ========================================
+      // IMPROVED SCORING: Style-first approach
+      // ========================================
       
-      // Calculate h-score: occasion match and category diversity
-      let hScore = 0;
+      // 1. OCCASION MATCHING (Primary factor - 40% weight)
+      let occasionScore = 0;
+      const outfitOccasionMatch = outfit.occasion?.toLowerCase() === targetOccasion.toLowerCase();
+      const jewelryOccasionMatch = jewel.occasion?.toLowerCase() === targetOccasion.toLowerCase();
       
-      // Occasion matching (strong bonus for exact match)
-      if (outfit.occasion === targetOccasion) hScore -= 0.3;
-      if (jewel.occasion === targetOccasion) hScore -= 0.2;
+      if (outfitOccasionMatch) occasionScore += 0.25;  // Strong bonus for outfit match
+      if (jewelryOccasionMatch) occasionScore += 0.15; // Good bonus for jewelry match
+      if (outfitOccasionMatch && jewelryOccasionMatch) occasionScore += 0.10; // Coordination bonus
       
-      // Budget utilization bonus (prefer using budget efficiently)
+      // 2. PREFERENCE MATCHING (Secondary factor - 25% weight)
+      let preferenceScore = 0;
+      if (preferenceKeywords.length > 0) {
+        const outfitText = `${outfit.name} ${outfit.description || ''}`.toLowerCase();
+        const jewelryText = `${jewel.name} ${jewel.description || ''}`.toLowerCase();
+        
+        for (const keyword of preferenceKeywords) {
+          if (outfitText.includes(keyword)) preferenceScore += 0.08;
+          if (jewelryText.includes(keyword)) preferenceScore += 0.05;
+        }
+        // Cap preference bonus
+        preferenceScore = Math.min(preferenceScore, 0.25);
+      }
+      
+      // 3. BUDGET UTILIZATION (Tertiary factor - 20% weight)
+      // For formal occasions, prefer utilizing MORE budget for quality
+      // For casual, being economical is fine
       const budgetUtilization = totalCost / budget;
-      if (budgetUtilization >= 0.6 && budgetUtilization <= 0.95) {
-        hScore -= 0.2; // Sweet spot bonus
+      let budgetScore = 0;
+      
+      if (targetPriority >= 0.7) {
+        // Formal/Wedding: Reward higher budget utilization (quality matters)
+        if (budgetUtilization >= 0.7 && budgetUtilization <= 0.95) {
+          budgetScore = 0.20;
+        } else if (budgetUtilization >= 0.5 && budgetUtilization < 0.7) {
+          budgetScore = 0.12;
+        } else if (budgetUtilization >= 0.3 && budgetUtilization < 0.5) {
+          budgetScore = 0.05;
+        }
+      } else {
+        // Casual: More flexible budget utilization
+        if (budgetUtilization >= 0.4 && budgetUtilization <= 0.85) {
+          budgetScore = 0.18;
+        } else if (budgetUtilization >= 0.25 && budgetUtilization < 0.4) {
+          budgetScore = 0.12;
+        }
+      }
+      
+      // 4. COORDINATION & QUALITY (15% weight)
+      let coordinationScore = 0;
+      
+      // Price balance between items (avoid cheap jewelry with expensive dress or vice versa)
+      const priceRatio = Math.min(outfit.price, jewel.price) / Math.max(outfit.price, jewel.price);
+      if (priceRatio >= 0.3 && priceRatio <= 0.8) {
+        coordinationScore += 0.10; // Well-balanced investment
+      }
+      
+      // Category coordination
+      if (outfit.category === "dress" && jewel.category === "jewelry") {
+        coordinationScore += 0.05;
+      }
+      
+      // ========================================
+      // CALCULATE FINAL SCORE
+      // ========================================
+      // Higher score = better (we invert for A* which minimizes)
+      const totalBenefit = occasionScore + preferenceScore + budgetScore + coordinationScore;
+      
+      // g-score: Inverted benefit (A* minimizes, so lower = better)
+      const gScore = 1 - totalBenefit;
+      
+      // h-score: Small cost efficiency factor (secondary consideration)
+      // Only slightly penalize very cheap options for formal occasions
+      let hScore = 0;
+      if (targetPriority >= 0.7 && budgetUtilization < 0.3) {
+        hScore = 0.15; // Small penalty for too cheap on formal occasions
       }
       
       const fScore = gScore + hScore;
@@ -67,16 +149,23 @@ function aStarSearch(
       const node: SearchNode = { outfit, jewelry: jewel, gScore, hScore, fScore };
       openSet.push(node);
       
-      if (fScore < bestNode.fScore) {
-        bestNode = node;
+      // Log top candidates for debugging
+      if (outfitOccasionMatch && jewelryOccasionMatch) {
+        console.log(`  🎯 Match: ${outfit.name} + ${jewel.name} | Occasion: ✓ | Score: ${(1-fScore).toFixed(3)} | Cost: Rs.${totalCost}`);
       }
     }
   }
   
-  // Sort by fScore and return best
+  // Sort by fScore (lower is better in A*)
   openSet.sort((a, b) => a.fScore - b.fScore);
   
-  console.log("✅ A* Search complete. Best score:", bestNode.fScore.toFixed(3));
+  if (openSet.length > 0) {
+    bestNode = openSet[0];
+    console.log("✅ A* Search complete. Best combination:", bestNode.outfit?.name, "+", bestNode.jewelry?.name);
+    console.log("   Final Score:", (1 - bestNode.fScore).toFixed(3), "| Cost: Rs.", (bestNode.outfit?.price || 0) + (bestNode.jewelry?.price || 0));
+  } else {
+    console.log("⚠️ A* Search: No valid combinations found within budget");
+  }
   
   return {
     outfit: bestNode.outfit,
@@ -370,7 +459,7 @@ Deno.serve(async (req) => {
     
     // 1. A* Search - Find optimal combination
     console.log("\n--- Running A* Search Algorithm ---");
-    const aStarResult = aStarSearch(outfits, jewelry, budget, occasion);
+    const aStarResult = aStarSearch(outfits, jewelry, budget, occasion, preferences);
     
     // 2. Genetic Algorithm - Evolve creative combinations
     console.log("\n--- Running Genetic Algorithm ---");
